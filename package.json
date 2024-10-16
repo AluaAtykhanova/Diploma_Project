@@ -16,8 +16,12 @@
     "nodemon": "^3.1.7"
   },
   "dependencies": {
+    "@langchain/core": "^0.3.11",
+    "@langchain/openai": "^0.3.7",
     "config": "^3.3.12",
     "dotenv": "^16.4.5",
+    "langchain": "^0.3.2",
+    "openai": "^4.67.3",
     "telegraf": "^4.16.3"
   }
 }
