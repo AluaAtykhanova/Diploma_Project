@@ -1,3 +1,4 @@
+//bot/config.js
 import {prompts} from "./prompts/prompts.js"
 export const INITIAL_SESSION = {
     messages: [

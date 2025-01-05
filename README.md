@@ -1,16 +1,17 @@
 project/
 ├── bot/                        # Основной код Telegram-бота
-│   ├── prompts/
-│   │   ├── instructions.js     # Строки инструкций для бота
-│   │   └── resolutions.js      # Резолюции
-│   ├── handlers/               # Обработчики запросов
+│   ├── commands/               # Обработчики команд
 │   │   ├── sessionCommands.js  # Обработчики команд `/start` и `/new`
+│   ├── handlers/               # Обработчики запросов
 │   │   ├── messageHandler.js   # Обработка текстовых сообщений
 │   │   └── forms.js            # Логика обработки анкет
 │   ├── middlewares/            # Промежуточные слои
 │   │   ├── rateLimiter.js      # Ограничение частоты запросов
 │   │   ├── sessionHandler.js   # Управление сессиями
 │   │   └── errorHandler.js     # Обработка ошибок
+│   ├── prompts/
+│   │   ├── instructions.js     # Строки инструкций для бота
+│   │   └── resolutions.js      # Резолюции
 │   ├── utils/                  # Утилитарные функции
 │   │   ├── aiClient.js         # Взаимодействие с OpenAI API
 │   │   ├── logger.js           # Логирование

@@ -1,3 +1,4 @@
+//bot/bot.js 
 import { Telegraf, session } from "telegraf";
 import { INITIAL_SESSION } from './config.js';
 import { startNewSession } from './commands/sessionCommands.js';

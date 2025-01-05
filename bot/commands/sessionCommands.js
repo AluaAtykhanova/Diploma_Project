@@ -1,3 +1,4 @@
+//bot/commands/sessionCommands.js
 import { INITIAL_SESSION } from '../config.js';
 
 export const startNewSession = async (ctx) => {

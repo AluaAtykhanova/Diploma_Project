@@ -1,3 +1,4 @@
+//bot/utils/logger.js
 import fs from 'fs';
 import path from 'path';
 import { format } from 'date-fns';  // Для формата даты

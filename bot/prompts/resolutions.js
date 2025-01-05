@@ -1,3 +1,4 @@
+//bot/prompts/resolutions.js
 export const niceResolutions = [
     "Хорошие резолюции строятся на человеческих дилеммах, вот пример хороших резолюций:" +
     "ЭП включит Mein Kampf в школьную программу Германии" +

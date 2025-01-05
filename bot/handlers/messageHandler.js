@@ -1,3 +1,4 @@
+//bot/handlers/messageHandler.js
 import { generateChatResponse } from '../utils/aiClient.js';
 import { MAX_MESSAGES } from '../config.js';
 import { logInfo, logError } from '../utils/logger.js';
