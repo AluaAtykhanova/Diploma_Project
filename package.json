@@ -19,6 +19,7 @@
     "@langchain/core": "^0.3.11",
     "@langchain/openai": "^0.3.7",
     "config": "^3.3.12",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
     "langchain": "^0.3.2",
     "openai": "^4.67.3",

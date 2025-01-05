@@ -1,5 +1,5 @@
 import { chatWithGPT } from "./openai.js";
-import { MAX_MESSAGES } from "./config.js";
+import { MAX_MESSAGES } from "../config/config_openai.js";
 
 export const ChatCompaion = async (ctx, messageText) => {
 	try {
