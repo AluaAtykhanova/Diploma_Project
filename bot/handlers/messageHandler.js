@@ -10,6 +10,7 @@ export const handleMessage = async (ctx, messageText) => {
         if (ctx.session.messages.length > MAX_MESSAGES) {
             ctx.session.messages = [
                 ctx.session.messages[0],
+                ctx.session.messages[1],
                 ...ctx.session.messages.slice(-MAX_MESSAGES),
             ];
         }

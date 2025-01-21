@@ -35,6 +35,7 @@ const currentAppLogFile = path.join(appLogDir, `app-${getLogFileName()}`);
 export const logError = (message) => {
   const logEntry = `[ERROR] [${new Date().toISOString()}]: ${message}\n`;
   fs.appendFileSync(currentErrorLogFile, logEntry, 'utf8');
+  console.log(`[ERROR] [${new Date().toISOString()}]: ${message}\n`)
 };
 
 // Запись информации в лог обычных приложений
