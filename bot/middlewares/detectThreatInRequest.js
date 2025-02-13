@@ -1,10 +1,12 @@
 //bot/handlers/messageHandler.js
-import { identifyNegativeRequest } from '../utils/aiClient.js';
-import { MAX_MESSAGES } from '../config.js';
-import { logInfo, logError } from '../utils/logger.js';
-import { NEGATIVE_ANALYSIS } from '../config.js';
+const { identifyNegativeRequest } = require ('../utils/aiClient.js');
+const { MAX_MESSAGES } = require ('../config.js');
+const { logSecure, logError } = require ('../utils/logger.js');
+const { NEGATIVE_ANALYSIS } = require ('../config.js');
+const { handleMessage } = require ('../handlers/messageHandler.js');
+const { addWarningsByUserId } = require ('../controllers/warning.js');
 
-export const detectThreatInRequest = async (ctx, messageText) => {
+const detectThreatInRequest = async (ctx, messageText) => {
     try {
         let last = NEGATIVE_ANALYSIS;
 
@@ -16,15 +18,25 @@ export const detectThreatInRequest = async (ctx, messageText) => {
         }
 
         last.messages.push({ role: "user", content: messageText });
-        logInfo(`User message: ${messageText}`);
+        logSecure(`User message: ${messageText}`);
 
         const response = await identifyNegativeRequest(last.messages);
+        logSecure(`detectThreatInRequest response: ${response}`);
 
-        // Отправляем ответ пользователю
-        // await ctx.reply( "detectThreatInRequest "+ response);
-        logInfo(`detectThreatInRequest response: ${response}`);
+        if (response.startsWith('True')) {
+            const { count, is_banned } = await addWarningsByUserId(ctx.message.message_id,response,messageText,ctx.message.from.id)
+
+            if (is_banned) {
+                return await ctx.reply(`detectThreatInRequest Извините, теперь, Вы в нашем стоп листе`);
+            } else {
+                return await ctx.reply(`detectThreatInRequest Предупреждение №${count}/5: ` + response);
+            }
+        }
+        await handleMessage(ctx, messageText);
     } catch (error) {
         logError(`Error processing message: ${error.message}`);
         await ctx.reply("Произошла ошибка. Попробуй снова.");
     }
 };
+
+module.exports = { detectThreatInRequest };

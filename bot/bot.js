@@ -1,14 +1,14 @@
 //bot/bot.js 
-import { Telegraf, session } from "telegraf";
-import { INITIAL_SESSION } from './config.js';
-import { startNewSession } from './commands/sessionCommands.js';
-import { handleMessage } from './handlers/messageHandler.js';
-import { rateLimiter, processQueue } from './middlewares/rateLimiter.js';
-import { detectThreatInRequest } from './middlewares/detectThreatInRequest.js';
+const { Telegraf, session } = require ("telegraf");
+const { INITIAL_SESSION } = require ('./config.js');
+const { startNewSession } = require ('./commands/sessionCommands.js');
+const { rateLimiter, processQueue } = require ('./middlewares/rateLimiter.js');
+const { detectThreatInRequest } = require ('./middlewares/detectThreatInRequest.js');
+const { addUser,getInfoByUserId } = require ('./controllers/warning.js');
 
 const BOT_TOKEN = process.env.TELEGRAM_TOKEN;
 
-export const startBot = () => {
+const startBot = () => {
     const bot = new Telegraf(BOT_TOKEN); 
 
     bot.use(session());
@@ -20,9 +20,15 @@ export const startBot = () => {
     bot.on('text', async (ctx) => {
         ctx.session ??= INITIAL_SESSION;
         const messageText = ctx.message.text;
-        await ctx.reply("Сообщение получено. Обрабатываю...");
-        await detectThreatInRequest(ctx, messageText);
-        await handleMessage(ctx, messageText);
+        const { is_banned } = await getInfoByUserId(ctx.message.from.id)
+        if(is_banned){
+            await ctx.reply("Извините, Вы в нашем стоп листе");
+        }else{
+            console.log("startBot: " + ctx.message)
+            addUser(ctx, ctx.message.from.id)
+            await ctx.reply("Сообщение получено. Обрабатываю... ");
+            await detectThreatInRequest(ctx, messageText);
+        }
     });
 
     bot.launch();
@@ -32,3 +38,5 @@ export const startBot = () => {
 
     processQueue(); 
 };
+
+module.exports = { startBot };

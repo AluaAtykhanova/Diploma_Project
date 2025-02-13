@@ -1,5 +1,11 @@
-import dotenv from "dotenv";
-import { startBot } from "./bot/bot.js";
+//index.js
+const dotenv = require('dotenv');
+const { startBot } = require ("./bot/bot.js");
+const { initializeDB } = require ("./bot/dbPool.js");
 
 dotenv.config();
-startBot();
+
+(async () => {
+    await initializeDB(); // Инициализация подключения к базе данных
+    startBot();           // Запуск бота
+})();

@@ -1,6 +1,6 @@
 //bot/utils/aiClient.js
-import OpenAI from 'openai';
-import dotenv from "dotenv";
+const OpenAI = require ('openai');
+const dotenv = require ('dotenv');
 
 dotenv.config();
 
@@ -12,13 +12,12 @@ const openai2 = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY_2,
 });
 
-export const identifyNegativeRequest = async (messages) => {
+const identifyNegativeRequest = async (messages) => {
     try {
         const chatCompletion = await openai1.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages,
         });
-        // console.log(messages)
 
         return chatCompletion.choices[0].message.content;
     } catch (error) {
@@ -27,7 +26,7 @@ export const identifyNegativeRequest = async (messages) => {
     }
 };
 
-export const generateChatResponse = async (messages) => {
+const generateChatResponse = async (messages) => {
     try {
         const chatCompletion = await openai2.chat.completions.create({
             model: "gpt-3.5-turbo",
@@ -39,3 +38,5 @@ export const generateChatResponse = async (messages) => {
         throw error;
     }
 };
+
+module.exports = { generateChatResponse, identifyNegativeRequest };

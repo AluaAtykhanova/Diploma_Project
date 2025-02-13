@@ -1,9 +1,9 @@
 //bot/handlers/messageHandler.js
-import { generateChatResponse } from '../utils/aiClient.js';
-import { MAX_MESSAGES } from '../config.js';
-import { logInfo, logError } from '../utils/logger.js';
+const { generateChatResponse }  = require ('../utils/aiClient.js');
+const { MAX_MESSAGES }  = require ('../config.js');
+const { logInfo, logError }  = require ('../utils/logger.js');
 
-export const handleMessage = async (ctx, messageText) => {
+const handleMessage = async (ctx, messageText) => {
     try {
         ctx.session ??= { messages: [] };
 
@@ -28,3 +28,5 @@ export const handleMessage = async (ctx, messageText) => {
         await ctx.reply("Произошла ошибка. Попробуй снова.");
     }
 };
+
+module.exports = { handleMessage };

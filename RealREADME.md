@@ -1,7 +1,9 @@
 project/
 ├── bot/                                    # Основной код Telegram-бота
 │   ├── commands/                           # Обработчики команд
-│   │   ├── sessionCommands.js              # Обработчики команд `/start` и `/new`
+│   │   └── sessionCommands.js              # Обработчики команд `/start` и `/new`
+│   ├── controllers/                        # Обработчики запросов в бд
+│   │   └── warnings.js                     # Процессы связаные с предупржедениями и стоп-листом
 │   ├── handlers/                           # Обработчики запросов
 │   │   └── messageHandler.js               # Обработка текстовых сообщений
 │   ├── middlewares/                        # Промежуточные слои

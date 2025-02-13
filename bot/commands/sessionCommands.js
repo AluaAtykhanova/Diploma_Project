@@ -1,7 +1,9 @@
 //bot/commands/sessionCommands.js
-import { INITIAL_SESSION } from '../config.js';
+const { INITIAL_SESSION } = require ('../config.js');
 
-export const startNewSession = async (ctx) => {
+const startNewSession = async (ctx) => {
     ctx.session = INITIAL_SESSION;
     await ctx.reply("Привет! Я - Аяу, твоя менторка в дебатах. Жду твой запрос!");
 };
+
+module.exports = { startNewSession };

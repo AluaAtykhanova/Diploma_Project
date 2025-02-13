@@ -1,12 +1,13 @@
 //bot/utils/logger.js
-import fs from 'fs';
-import path from 'path';
-import { format } from 'date-fns';  // Для формата даты
+const fs = require ('fs');
+const path = require ('path');
+const { format } = require ('date-fns');  // Для формата даты
 
 // Директории для логов
 const logsDir = path.join('storage', 'logs');
 const errorLogDir = path.join(logsDir, 'errors');
 const appLogDir = path.join(logsDir, 'app');
+const secureLogDir = path.join(logsDir, 'secure');
 
 // Проверка и создание директорий для логов, если они не существуют
 if (!fs.existsSync(logsDir)) {
@@ -21,6 +22,9 @@ if (!fs.existsSync(appLogDir)) {
   fs.mkdirSync(appLogDir, { recursive: true });
 }
 
+if (!fs.existsSync(secureLogDir)) {
+  fs.mkdirSync(secureLogDir, { recursive: true });
+}
 // Генерация имени файла на основе текущей даты (например, errors-2024-12-10.log)
 const getLogFileName = () => {
   const currentDate = format(new Date(), 'yyyy-MM-dd');
@@ -30,18 +34,25 @@ const getLogFileName = () => {
 // Путь к текущим лог-файлам
 const currentErrorLogFile = path.join(errorLogDir, `errors-${getLogFileName()}`);
 const currentAppLogFile = path.join(appLogDir, `app-${getLogFileName()}`);
+const currentSecureLogFile = path.join(secureLogDir, `secure-${getLogFileName()}`);
 
 // Запись ошибки в лог ошибок
-export const logError = (message) => {
+const logError = (message) => {
   const logEntry = `[ERROR] [${new Date().toISOString()}]: ${message}\n`;
   fs.appendFileSync(currentErrorLogFile, logEntry, 'utf8');
   console.log(`[ERROR] [${new Date().toISOString()}]: ${message}\n`)
 };
 
 // Запись информации в лог обычных приложений
-export const logInfo = (message) => {
+const logInfo = (message) => {
   const logEntry = `[INFO] [${new Date().toISOString()}]: ${message}\n`;
   fs.appendFileSync(currentAppLogFile, logEntry, 'utf8');
+};
+
+// Запись информации в лог обычных приложений
+const logSecure = (message) => {
+  const logEntry = `[INFO] [${new Date().toISOString()}]: ${message}\n`;
+  fs.appendFileSync(currentSecureLogFile, logEntry, 'utf8');
 };
 
 // Функция для удаления старых логов (старше 30 дней) для каждой папки
@@ -65,3 +76,6 @@ const deleteOldLogs = (logDir) => {
 // Удаление старых логов для обеих папок
 deleteOldLogs(errorLogDir);
 deleteOldLogs(appLogDir);
+deleteOldLogs(secureLogDir);
+
+module.exports = { logError, logInfo, logSecure};

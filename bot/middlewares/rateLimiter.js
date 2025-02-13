@@ -1,6 +1,6 @@
 //bot/middlewares/rateLimiter.js
-import { logError } from '../utils/logger.js';
-import { handleMessage } from '../handlers/messageHandler.js';
+const { logError } = require ('../utils/logger.js');
+const { handleMessage } = require ('../handlers/messageHandler.js');
 
 const MESSAGE_LIMIT = 30; // Лимит сообщений в минуту
 const RESET_INTERVAL = 60000; // Интервал сброса лимита в миллисекундах (1 минута)
@@ -19,7 +19,7 @@ const resetMessageCount = () => {
 };
 
 // Основная функция для middleware
-export const rateLimiter = async (ctx, next) => {
+const rateLimiter = async (ctx, next) => {
     resetMessageCount();
 
     if (messageCount < MESSAGE_LIMIT) {
@@ -38,7 +38,7 @@ export const rateLimiter = async (ctx, next) => {
 };
 
 // Функция для обработки очереди сообщений
-export const processQueue = async () => {
+const processQueue = async () => {
     setInterval(async () => {
         resetMessageCount();
 
@@ -60,3 +60,5 @@ export const processQueue = async () => {
         }
     }, 1000); // Проверяем очередь каждую секунду
 };
+
+module.exports = { processQueue, rateLimiter};
