@@ -8,6 +8,7 @@ const logsDir = path.join('storage', 'logs');
 const errorLogDir = path.join(logsDir, 'errors');
 const appLogDir = path.join(logsDir, 'app');
 const secureLogDir = path.join(logsDir, 'secure');
+const messageQueueLogDir = path.join(logsDir, 'queue');
 
 // Проверка и создание директорий для логов, если они не существуют
 if (!fs.existsSync(logsDir)) {
@@ -25,6 +26,10 @@ if (!fs.existsSync(appLogDir)) {
 if (!fs.existsSync(secureLogDir)) {
   fs.mkdirSync(secureLogDir, { recursive: true });
 }
+
+if (!fs.existsSync(messageQueueLogDir)) {
+  fs.mkdirSync(messageQueueLogDir, { recursive: true });
+}
 // Генерация имени файла на основе текущей даты (например, errors-2024-12-10.log)
 const getLogFileName = () => {
   const currentDate = format(new Date(), 'yyyy-MM-dd');
@@ -35,6 +40,7 @@ const getLogFileName = () => {
 const currentErrorLogFile = path.join(errorLogDir, `errors-${getLogFileName()}`);
 const currentAppLogFile = path.join(appLogDir, `app-${getLogFileName()}`);
 const currentSecureLogFile = path.join(secureLogDir, `secure-${getLogFileName()}`);
+const currentMessageQueueLogFile = path.join(messageQueueLogDir, `queue-${getLogFileName()}`);
 
 // Запись ошибки в лог ошибок
 const logError = (message) => {
@@ -49,10 +55,16 @@ const logInfo = (message) => {
   fs.appendFileSync(currentAppLogFile, logEntry, 'utf8');
 };
 
-// Запись информации в лог обычных приложений
+// Запись информации в лог предупреждений/безопасности
 const logSecure = (message) => {
-  const logEntry = `[INFO] [${new Date().toISOString()}]: ${message}\n`;
+  const logEntry = `[INFO-ERROR] [${new Date().toISOString()}]: ${message}\n`;
   fs.appendFileSync(currentSecureLogFile, logEntry, 'utf8');
+};
+
+// Запись информации в лог очереди сообщений
+const logQueue = (message) => {
+  const logEntry = `[INFO] [${new Date().toISOString()}]: ${message}\n`;
+  fs.appendFileSync(currentMessageQueueLogFile, logEntry, 'utf8');
 };
 
 // Функция для удаления старых логов (старше 30 дней) для каждой папки
@@ -62,8 +74,8 @@ const deleteOldLogs = (logDir) => {
 
   files.forEach((file) => {
     const filePath = path.join(logDir, file);
-    const stats = fs.statSync(filePath);
-    const fileDate = new Date(file.split('-')[0]); // Извлекаем дату из имени файла (например, errors-2024-12-10.log)
+    const fileDateString = file.replace('.log', '').split('-').slice(1, 4).join('-');// Извлекаем дату в формате "2025-02-13"
+    const fileDate = new Date(fileDateString); // Преобразуем строку в дату
 
     // Если файл старше 30 дней, удаляем его
     if ((currentDate - fileDate) / (1000 * 60 * 60 * 24) > 30) {
@@ -77,5 +89,6 @@ const deleteOldLogs = (logDir) => {
 deleteOldLogs(errorLogDir);
 deleteOldLogs(appLogDir);
 deleteOldLogs(secureLogDir);
+deleteOldLogs(messageQueueLogDir);
 
-module.exports = { logError, logInfo, logSecure};
+module.exports = { logError, logInfo, logSecure, logQueue};

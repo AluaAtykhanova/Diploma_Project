@@ -12,6 +12,8 @@ project/
 │   ├── prompts/
 │   │   ├── instructions.js                 # Строки инструкций для бота
 │   │   └── resolutions.js                  # Резолюции
+│   ├── queries/
+│   │   └── userQuery.js                    # Запросы в бд касающиеся пользователя
 │   ├── utils/                              # Утилитарные функции
 │   │   ├── aiClient.js                     # Взаимодействие с OpenAI API
 │   │   ├── logger.js                       # Логирование

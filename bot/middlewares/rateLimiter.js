@@ -1,5 +1,5 @@
 //bot/middlewares/rateLimiter.js
-const { logError } = require ('../utils/logger.js');
+const { logQueue } = require ('../utils/logger.js');
 const { handleMessage } = require ('../handlers/messageHandler.js');
 
 const MESSAGE_LIMIT = 30; // Лимит сообщений в минуту
@@ -33,7 +33,7 @@ const rateLimiter = async (ctx, next) => {
         messageQueue.push({ userId, ctx, messageText });
 
         // Логируем добавление сообщения в очередь
-        logError(`Message from user ${userId} added to the queue. Queue length: ${messageQueue.length}`);
+        logQueue(`Message from user ${userId} added to the queue. Queue length: ${messageQueue.length}`);
     }
 };
 
@@ -50,7 +50,7 @@ const processQueue = async () => {
             await ctx.reply("Сообщение получено. Обрабатываю...");
 
             // Логируем отправку сообщения
-            logError(`Message to user ${userId} sent from queue. Queue length: ${messageQueue.length}`);
+            logQueue(`Message to user ${userId} sent from queue. Queue length: ${messageQueue.length}`);
 
             // Продолжаем обработку сообщения
             await handleMessage(ctx, messageText);

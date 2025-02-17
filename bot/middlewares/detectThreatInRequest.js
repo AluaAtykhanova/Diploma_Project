@@ -24,7 +24,7 @@ const detectThreatInRequest = async (ctx, messageText) => {
         logSecure(`detectThreatInRequest response: ${response}`);
 
         if (response.startsWith('True')) {
-            const { count, is_banned } = await addWarningsByUserId(ctx.message.message_id,response,messageText,ctx.message.from.id)
+            const { count, is_banned } = await addWarningsByUserId(ctx,ctx.message.message_id,response,messageText,ctx.message.from.id)
 
             if (is_banned) {
                 return await ctx.reply(`detectThreatInRequest Извините, теперь, Вы в нашем стоп листе`);
