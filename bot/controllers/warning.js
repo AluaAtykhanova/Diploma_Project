@@ -7,7 +7,7 @@ const getUserBanStatus = async (ctx,userId) => {
 
         return query.rows[0].is_banned;
     } catch (error) {
-        logError(`Error processing message: ${error.message}`);
+        logError(`Error processing message(warning.js): ${error.message}`);
         await ctx.reply("Произошла ошибка. Попробуй снова.");
     }
 };
@@ -22,20 +22,20 @@ const addUser = async (ctx,userId) => {
 		}
     } catch (error) {
         await ctx.reply("Произошла ошибка. Попробуй снова.");
-        logError(`Error processing message: ${error.message}`);
+        logError(`Error processing message(warning.js): ${error.message}`);
     }
 };
 
 const addWarningsByUserId = async (ctx,messageId,warning,text,userId) => {
     try {
-        const query = await userQuery.addWarningsByUserId(ctx,messageId,warning,text,userId);
+        const query = await userQuery.addWarningsByUserId(messageId,warning,text,userId);
 
         return {
             count: query.rows[0].count, 
             is_banned: query.rows[0].is_banned 
         };
     } catch (error) {
-        logError(`Error processing message: ${error.message}`);
+        logError(`Error processing message(warning.js): ${error.message}`);
         await ctx.reply("Произошла ошибка. Попробуй снова.");
     }
 };

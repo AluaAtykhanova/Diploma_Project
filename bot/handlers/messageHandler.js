@@ -24,7 +24,7 @@ const handleMessage = async (ctx, messageText) => {
         await ctx.reply(response);
         logInfo(`AI response: ${response}`);
     } catch (error) {
-        logError(`Error processing message: ${error.message}`);
+        logError(`Error processing message(messageHandler.js): ${error.message}`);
         await ctx.reply("Произошла ошибка. Попробуй снова.");
     }
 };

@@ -34,7 +34,7 @@ const detectThreatInRequest = async (ctx, messageText) => {
         }
         await handleMessage(ctx, messageText);
     } catch (error) {
-        logError(`Error processing message: ${error.message}`);
+        logError(`Error processing message(detectThreatInRequest.js): ${error.message}`);
         await ctx.reply("Произошла ошибка. Попробуй снова.");
     }
 };
