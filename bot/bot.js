@@ -20,11 +20,11 @@ const startBot = () => {
     bot.on('text', async (ctx) => {
         ctx.session ??= INITIAL_SESSION;
         const messageText = ctx.message.text;
+        addUser(ctx, ctx.message.from.id)
         const { is_banned } = await getUserBanStatus(ctx,ctx.message.from.id)
         if(is_banned){
             await ctx.reply("Извините, Вы в нашем стоп листе");
         }else{
-            addUser(ctx, ctx.message.from.id)
             await ctx.reply("Сообщение получено. Обрабатываю... ");
             await detectThreatInRequest(ctx, messageText);
         }

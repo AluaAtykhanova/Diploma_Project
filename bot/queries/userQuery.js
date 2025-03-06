@@ -1,3 +1,4 @@
+//queries/userQuery.js
 const pool = require("../dbPool.js");
 
 const getUserBanStatus = async (userId) => {
