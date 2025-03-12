@@ -6,7 +6,7 @@ const getUserBanStatus = async (ctx,userId) => {
     try {
         const query = await userQuery.getUserBanStatus(userId);
 
-        return query.rows[0].is_banned;
+        return query.rows.length > 0 ? query.rows[0].is_banned : false;
     } catch (error) {
         logError(`Error processing message(warning.js): ${error.message}`);
         await ctx.reply("Произошла ошибка. Попробуй снова.");
