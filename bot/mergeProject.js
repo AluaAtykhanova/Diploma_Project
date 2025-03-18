@@ -3,6 +3,7 @@ const path = require('path');
 
 const outputFile = 'all_code.txt';
 const rootDir = './'; // Корневая папка проекта
+//node mergeProject.js
 
 function getAllFiles(dirPath, arrayOfFiles) {
     const files = fs.readdirSync(dirPath);
