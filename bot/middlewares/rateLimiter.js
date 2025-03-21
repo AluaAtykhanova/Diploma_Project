@@ -1,64 +1,95 @@
-//bot/middlewares/rateLimiter.js
-const { logQueue } = require ('../utils/logger.js');
-const { handleMessage } = require ('../handlers/messageHandler.js');
+// bot/middlewares/rateLimiter.js
+const { logQueue } = require('../utils/logger.js');
+const { handleMessage } = require('../handlers/messageHandler.js');
 
-const MESSAGE_LIMIT = 30; // Лимит сообщений в минуту
-const RESET_INTERVAL = 60000; // Интервал сброса лимита в миллисекундах (1 минута)
+const MESSAGE_LIMIT_GLOBAL = 30; // Максимальное количество принимаемых сообщений в минуту
+const SEND_LIMIT_GLOBAL = 30; // Максимальное количество отправляемых сообщений в минуту
+const RESET_INTERVAL = 60000; // Сброс лимита (1 минута)
+const CHECK_QUEUE_INTERVAL = 2000; // Интервал обработки очереди (2 секунды)
 
-let messageQueue = []; // Очередь сообщений
-let messageCount = 0; // Счётчик отправленных сообщений
-let lastResetTime = Date.now(); // Время последнего сброса счётчика
+let globalMessageCount = 0; // Счетчик входящих сообщений
+let globalSendCount = 0; // Счетчик отправленных сообщений
+const messageQueue = []; // Очередь входящих сообщений
+const sendQueue = []; // Очередь сообщений на отправку
 
-// Функция сброса счётчика сообщений
-const resetMessageCount = () => {
-    const now = Date.now();
-    if (now - lastResetTime >= RESET_INTERVAL) {
-        messageCount = 0;
-        lastResetTime = now;
-    }
-};
+// Сбрасываем лимиты каждую минуту
+setInterval(() => {
+    globalMessageCount = 0;
+    globalSendCount = 0;
+}, RESET_INTERVAL);
 
-// Основная функция для middleware
+// Лимит на приём сообщений
 const rateLimiter = async (ctx, next) => {
-    resetMessageCount();
+    if (globalMessageCount >= MESSAGE_LIMIT_GLOBAL) {
+        const processingMessage = await ctx.reply("⏳ Очередь обработки. Пожалуйста, подождите...");
+        messageQueue.push({ ctx, processingMessage });
+        logQueue(`Сообщение от ${ctx.message.from.id} добавлено в очередь. Длина очереди: ${messageQueue.length}`);
+        return;
+    }
 
-    if (messageCount < MESSAGE_LIMIT) {
-        // Если лимит не достигнут, отправляем сообщение и увеличиваем счётчик
-        messageCount++;
-        await next();
-    } else {
-        // Если лимит достигнут, добавляем сообщение в очередь
-        const userId = ctx.message.from.id;
-        const messageText = ctx.message.text;
-        messageQueue.push({ userId, ctx, messageText });
+    globalMessageCount++;
+    await next();
+};
 
-        // Логируем добавление сообщения в очередь
-        logQueue(`Message from user ${userId} added to the queue. Queue length: ${messageQueue.length}`);
+// Функция для отправки сообщений с глобальным лимитом
+const sendMessage = async (ctx, text, messageId = null) => {
+    if (globalSendCount >= SEND_LIMIT_GLOBAL) {
+        sendQueue.push({ ctx, text, messageId });
+        logQueue(`Сообщение в отправку поставлено в очередь. Длина очереди: ${sendQueue.length}`);
+        return;
+    }
+
+    globalSendCount++;
+
+    try {
+        if (messageId) {
+            // Если нужно обновить старое сообщение (например, "Очередь обработки" → "Ваш запрос обрабатывается...")
+            await ctx.telegram.editMessageText(ctx.chat.id, messageId, undefined, text);
+        } else {
+            await ctx.reply(text);
+        }
+    } catch (error) {
+        console.error("Ошибка при отправке сообщения:", error.message);
     }
 };
 
-// Функция для обработки очереди сообщений
+// Обработчик очереди входящих сообщений
 const processQueue = async () => {
     setInterval(async () => {
-        resetMessageCount();
+        if (messageQueue.length > 0 && globalMessageCount < MESSAGE_LIMIT_GLOBAL) {
+            const { ctx, processingMessage } = messageQueue.shift();
 
-        if (messageCount < MESSAGE_LIMIT && messageQueue.length > 0) {
-            const messageData = messageQueue.shift(); // Извлекаем первое сообщение из очереди
-            const { userId, ctx, messageText } = messageData;
+            // Обновляем сообщение "в обработке"
+            try {
+                await sendMessage(ctx, "✅ Ваш запрос обрабатывается...", processingMessage.message_id);
+            } catch (error) {
+                console.error("Ошибка при обновлении сообщения:", error.message);
+            }
 
-            // Отправляем классическое сообщение "Сообщение получено. Обрабатываю..."
-            await ctx.reply("Сообщение получено. Обрабатываю...");
-
-            // Логируем отправку сообщения
-            logQueue(`Message to user ${userId} sent from queue. Queue length: ${messageQueue.length}`);
-
-            // Продолжаем обработку сообщения
-            await handleMessage(ctx, messageText);
- 
-            // Увеличиваем счётчик отправленных сообщений
-            messageCount++;
+            globalMessageCount++;
+            await handleMessage(ctx, ctx.message.text);
         }
-    }, 1000); // Проверяем очередь каждую секунду
+    }, CHECK_QUEUE_INTERVAL);
 };
 
-module.exports = { processQueue, rateLimiter};
+// Обработчик очереди на отправку сообщений
+const processSendQueue = async () => {
+    setInterval(async () => {
+        if (sendQueue.length > 0 && globalSendCount < SEND_LIMIT_GLOBAL) {
+            const { ctx, text, messageId } = sendQueue.shift();
+            globalSendCount++;
+
+            try {
+                if (messageId) {
+                    await ctx.telegram.editMessageText(ctx.chat.id, messageId, undefined, text);
+                } else {
+                    await ctx.reply(text);
+                }
+            } catch (error) {
+                console.error("Ошибка при отправке сообщения из очереди:", error.message);
+            }
+        }
+    }, CHECK_QUEUE_INTERVAL);
+};
+
+module.exports = { rateLimiter, processQueue, sendMessage, processSendQueue };

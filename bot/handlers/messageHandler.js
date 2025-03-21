@@ -1,7 +1,7 @@
-//bot/handlers/messageHandler.js
 const { generateChatResponse }  = require ('../utils/aiClient.js');
 const { MAX_MESSAGES }  = require ('../config.js');
 const { logInfo, logError }  = require ('../utils/logger.js');
+const { sendMessage } = require('../middlewares/rateLimiter.js');
 
 const handleMessage = async (ctx, messageText) => {
     try {
@@ -21,11 +21,11 @@ const handleMessage = async (ctx, messageText) => {
         const response = await generateChatResponse(ctx.session.messages);
         ctx.session.messages.push({ role: "assistant", content: response });
 
-        await ctx.reply(response);
+        await sendMessage(ctx, response);
         logInfo(`AI response: ${response}`);
     } catch (error) {
         logError(`Error processing message(messageHandler.js): ${error.message}`);
-        await ctx.reply("Произошла ошибка. Попробуй снова.");
+        await sendMessage(ctx, "Произошла ошибка. Попробуй снова.");
     }
 };
 
