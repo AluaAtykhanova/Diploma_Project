@@ -66,29 +66,29 @@ const logQueue = (message) => {
   const logEntry = `[INFO] [${new Date().toISOString()}]: ${message}\n`;
   fs.appendFileSync(currentMessageQueueLogFile, logEntry, 'utf8');
 };
+// Пока что старые логи нам ещё пригодятся
+// // Функция для удаления старых логов (старше 30 дней) для каждой папки
+// const deleteOldLogs = (logDir) => {
+//   const files = fs.readdirSync(logDir);
+//   const currentDate = new Date();
 
-// Функция для удаления старых логов (старше 30 дней) для каждой папки
-const deleteOldLogs = (logDir) => {
-  const files = fs.readdirSync(logDir);
-  const currentDate = new Date();
+//   files.forEach((file) => {
+//     const filePath = path.join(logDir, file);
+//     const fileDateString = file.replace('.log', '').split('-').slice(1, 4).join('-');// Извлекаем дату в формате "2025-02-13"
+//     const fileDate = new Date(fileDateString); // Преобразуем строку в дату
 
-  files.forEach((file) => {
-    const filePath = path.join(logDir, file);
-    const fileDateString = file.replace('.log', '').split('-').slice(1, 4).join('-');// Извлекаем дату в формате "2025-02-13"
-    const fileDate = new Date(fileDateString); // Преобразуем строку в дату
-
-    // Если файл старше 30 дней, удаляем его
-    if ((currentDate - fileDate) / (1000 * 60 * 60 * 24) > 30) {
-      fs.unlinkSync(filePath);
-      console.log(`Удален старый лог: ${file}`);
-    }
-  });
-};
+//     // Если файл старше 30 дней, удаляем его
+//     if ((currentDate - fileDate) / (1000 * 60 * 60 * 24) > 30) {
+//       fs.unlinkSync(filePath);
+//       console.log(`Удален старый лог: ${file}`);
+//     }
+//   });
+// };
 
 // Удаление старых логов для обеих папок
-deleteOldLogs(errorLogDir);
-deleteOldLogs(appLogDir);
-deleteOldLogs(secureLogDir);
-deleteOldLogs(messageQueueLogDir);
+// deleteOldLogs(errorLogDir);
+// deleteOldLogs(appLogDir);
+// deleteOldLogs(secureLogDir);
+// deleteOldLogs(messageQueueLogDir);
 
 module.exports = { logError, logInfo, logSecure, logQueue};
