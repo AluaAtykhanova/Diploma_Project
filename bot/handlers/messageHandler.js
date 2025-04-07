@@ -1,7 +1,7 @@
 const { generateChatResponse }  = require ('../utils/aiClient.js');
 const { MAX_MESSAGES }  = require ('../config.js');
 const { logInfo, logError }  = require ('../utils/logger.js');
-const { sendMessage } = require('../middlewares/rateLimiter.js');
+const { sendMessage } = require ('../middlewares/sendMessage.js');
 
 const handleMessage = async (ctx, messageText) => {
     try {

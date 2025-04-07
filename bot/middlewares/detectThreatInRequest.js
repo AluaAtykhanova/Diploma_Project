@@ -5,7 +5,7 @@ const { logSecure, logError } = require ('../utils/logger.js');
 const { NEGATIVE_ANALYSIS } = require ('../config.js');
 const { handleMessage } = require ('../handlers/messageHandler.js');
 const { addWarningsByUserId } = require ('../controllers/warning.js');
-const { sendMessage } = require('../middlewares/rateLimiter.js');
+const { sendMessage } = require ('../middlewares/sendMessage.js');
 
 const detectThreatInRequest = async (ctx, messageText) => {
     try {

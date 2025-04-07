@@ -2,7 +2,8 @@
 const { Telegraf, session } = require ("telegraf");
 const { INITIAL_SESSION } = require ('./config.js');
 const { startNewSession } = require ('./commands/sessionCommands.js');
-const { sendMessage, processSendQueue, rateLimiter, processQueue } = require ('./middlewares/rateLimiter.js');
+const { rateLimiter, processQueue } = require ('./middlewares/rateLimiter.js');
+const { sendMessage, processSendQueue } = require ('./middlewares/sendMessage.js');
 const { detectThreatInRequest } = require ('./middlewares/detectThreatInRequest.js');
 const { addUser,getUserBanStatus } = require ('./controllers/warning.js');
 

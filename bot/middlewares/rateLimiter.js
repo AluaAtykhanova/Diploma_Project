@@ -31,28 +31,6 @@ const rateLimiter = async (ctx, next) => {
     await next();
 };
 
-// Функция для отправки сообщений с глобальным лимитом
-const sendMessage = async (ctx, text, messageId = null) => {
-    if (globalSendCount >= SEND_LIMIT_GLOBAL) {
-        sendQueue.push({ ctx, text, messageId });
-        logQueue(`Сообщение в отправку поставлено в очередь. Длина очереди: ${sendQueue.length}`);
-        return;
-    }
-
-    globalSendCount++;
-
-    try {
-        if (messageId) {
-            // Если нужно обновить старое сообщение (например, "Очередь обработки" → "Ваш запрос обрабатывается...")
-            await ctx.telegram.editMessageText(ctx.chat.id, messageId, undefined, text);
-        } else {
-            await ctx.reply(text);
-        }
-    } catch (error) {
-        console.error("Ошибка при отправке сообщения:", error.message);
-    }
-};
-
 // Обработчик очереди входящих сообщений
 const processQueue = async () => {
     setInterval(async () => {
@@ -72,24 +50,5 @@ const processQueue = async () => {
     }, CHECK_QUEUE_INTERVAL);
 };
 
-// Обработчик очереди на отправку сообщений
-const processSendQueue = async () => {
-    setInterval(async () => {
-        if (sendQueue.length > 0 && globalSendCount < SEND_LIMIT_GLOBAL) {
-            const { ctx, text, messageId } = sendQueue.shift();
-            globalSendCount++;
 
-            try {
-                if (messageId) {
-                    await ctx.telegram.editMessageText(ctx.chat.id, messageId, undefined, text);
-                } else {
-                    await ctx.reply(text);
-                }
-            } catch (error) {
-                console.error("Ошибка при отправке сообщения из очереди:", error.message);
-            }
-        }
-    }, CHECK_QUEUE_INTERVAL);
-};
-
-module.exports = { rateLimiter, processQueue, sendMessage, processSendQueue };
+module.exports = { rateLimiter, processQueue};
